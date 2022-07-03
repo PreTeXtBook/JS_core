@@ -25,9 +25,18 @@ function handleWW(ww_id, action) {
     const ww_user_id = ww_container.dataset.userid;
     const ww_course_password = ww_container.dataset.coursepassword;
 
-    // Set the current seed
-    if (!action) ww_container.dataset.current_seed = ww_container.dataset.seed;
-    else if (action == 'randomize') ww_container.dataset.current_seed = Number(ww_container.dataset.current_seed) + 100;
+ 	//
+
+	// Set the current seed
+	if (!action) {
+		ww_container.dataset.current_seed = ww_container.dataset.seed;
+		if (typeof eBookConfig !== 'undefined') {
+			if (eBookConfig.username !== '') {
+				ww_container.dataset.current_seed = webworkSeedHash(eBookConfig.username + ww_container.dataset.current_seed);
+			}
+		}
+	}
+	else if (action == 'randomize') ww_container.dataset.current_seed = Number(ww_container.dataset.current_seed) + 100;
 
     let loader = document.createElement('div');
     loader.style.position = 'absolute';
@@ -679,8 +688,7 @@ function translateHintSol(ww_id, body_div, ww_domain, b_ptx_has_hint, b_ptx_has_
         if (!hintsolp) continue;
         const hintSolType = hintSol.dataset.type;
 
-        if (hintsolp.previousElementSibling?.textContent.trim() != 'Hint:' &&
-            hintsolp.previousElementSibling?.textContent.trim() != 'Solution:')
+        if (hintSol == hintSols[0])
         {
             solutionlikewrapper = document.createElement('div');
             solutionlikewrapper.classList.add('webwork', 'solutions');
@@ -726,16 +734,29 @@ function createFeedbackButton(id, title, content) {
     feedbackButton.dataset.bsContent = `<div id="${id}-content">${content || ''}</div>`;
     if (!content) feedbackButton.dataset.emptyContent = '1';
 	const contentSpan = document.createElement('span');
-	contentSpan.style.fontWeight = 1000;
-	contentSpan.textContent = '\uD83D\uDDE9'
+	contentSpan.style.fontSize = '15pt';
+	contentSpan.textContent = '\uD83D\uDEC8'
     feedbackButton.appendChild(contentSpan);
     feedbackButton.type = 'button';
     feedbackButton.classList.add('ww-feedback');
     feedbackButton.style.fontSize = 'revert';
-    feedbackButton.style.height = '24px';
+    feedbackButton.style.border = 'none';
+    feedbackButton.style.verticalAlign = 'baseline';
+    feedbackButton.style.backgroundColor = 'transparent';
 
     feedbackButton.id = `${id}-feedback-button`;
     feedbackButton.dataset.bsToggle = 'popover';
 
     return feedbackButton;
 }
+
+function webworkSeedHash(string) {
+	var hash = 0, i, chr;
+	if (string.length === 0) return hash;
+	for (i = 0; i < string.length; i++) {
+		chr   = string.charCodeAt(i);
+		hash  = ((hash << 5) - hash) + chr;
+		hash |= 0; //Convert to 32bit integer
+	}
+	return hash;
+};
