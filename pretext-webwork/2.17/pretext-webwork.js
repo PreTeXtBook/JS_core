@@ -248,7 +248,7 @@ function handleWW(ww_id, action) {
 
         if (action == 'check') {
             // Runestone trigger
-            // TODO: chondition on platform=Runestone
+            // TODO: condition on platform=Runestone
             $("body").trigger('runestone_ww_check', data)
 
             const inputs = body_div.querySelectorAll("input:not([type=hidden])");
@@ -256,23 +256,60 @@ function handleWW(ww_id, action) {
                 const name = input.name;
                 if (input.type == 'text' && answers[name]) {
                     const score = data.rh_result.answers[name].score;
-                    let title = '';
+					let headline = '';
+					let correctClass = '';
                     if (score == 1) {
-                        title = '<span class="correct">Correct!</span>';
+						headline = 'Correct!';
+						correctClass = 'correct';
                     } else if (score > 0 && score < 1) {
-                        title = `<span class="partly-correct">${Math.round(score * 100)}% correct.</span>`;
+						headline = `${Math.round(score * 100)}% correct.`;
+						correctClass = 'partly-correct';
                     } else if (data.rh_result.answers[name].student_ans == '') {
-                        // do nothing if the submitted answer is blank and the problem has not already been scored as correct
-                        continue;
+						headline = 'Blank.';
+						correctClass = 'blank';
                     } else if (score == 0) {
-                        title = '<span class="incorrect">Incorrect.</span>';
+                        headline = 'Incorrect.';
+						correctClass = 'incorrect';
                     }
-
-                    input.after(createFeedbackButton(`${ww_id}-${name}`, title, data.rh_result.answers[name].ans_message));
+					let title = `<span class="${correctClass}">${headline}</span>`;
+					let message = (data.rh_result.answers[name].ans_message ? data.rh_result.answers[name].ans_message : '');
+					input.classList.add(correctClass);
+					// make a span that contains feedback
+					feedbackSpan = document.createElement('span');
+					feedbackSpan.id = `${ww_id}-${name}-feedback`;
+					feedbackHeadline = document.createElement('span');
+					feedbackHeadline.id = `${ww_id}-${name}-headline`;
+					feedbackHeadline.textContent = headline;
+					feedbackSpan.appendChild(feedbackHeadline);
+					feedbackMessage = document.createElement('span');
+					feedbackMessage.id = `${ww_id}-${name}-message`;
+					feedbackMessage.textContent = message;
+					feedbackSpan.appendChild(feedbackMessage);
+					// make a non breaking span to surround input, sr span, and feedback button
+					let nbSpan = document.createElement('span');
+					nbSpan.classList.add("nobreak");
+					input.parentNode.insertBefore(nbSpan, input);
+					nbSpan.appendChild(input);
+					// put a visibly hidden (screen-reader only) span with feedback
+					let srSpan = document.createElement('span');
+					srSpan.classList.add("visually-hidden");
+					srSpan.appendChild(feedbackSpan);
+					nbSpan.appendChild(srSpan);
+					// give the feedback to sr users immediately
+					input.setAttribute('aria-describedby',`${ww_id}-${name}-feedback`);
+					// make the feedback button
+					srSpan.after(createFeedbackButton(`${ww_id}-${name}`, title, message));
+	
                 }
 
                 if (input.type == 'radio' && answers[name]) {
+                    const score = data.rh_result.answers[name].score;
                     if (input.value == data.rh_result.answers[name].student_value) {
+						if (score == 1) {
+							input.parentNode.classList.add('correct');
+						} else {
+							input.parentNode.classList.add('incorrect');
+						}
                         const feedbackButton = createFeedbackButton(`${ww_id}-${name}`,
                             data.rh_result.answers[name].student_value == data.rh_result.answers[name].correct_choice
                             ? '<span class="correct">Correct!</span>' : '<span class="incorrect">Incorrect.</span>')
@@ -315,12 +352,43 @@ function handleWW(ww_id, action) {
 			const selects = body_div.querySelectorAll("select:not([type=hidden])");
             for (const select of selects) {
                 const name = select.name;
-                const feedbackButton = createFeedbackButton(`${ww_id}-${name}`,
-                    data.rh_result.answers[name].score == 1 ? '<span class="correct">Correct!</span>'
-                    : '<span class="incorrect">Incorrect.</span>')
-                feedbackButton.style.marginRight = '0.25rem';
-                feedbackButton.style.marginLeft = '0.5rem';
-                select.after(feedbackButton);
+				const score = data.rh_result.answers[name].score;
+				let title = '';
+				if (score == 1) {
+					headline = 'Correct!';
+					correctClass = 'correct';
+				} else {
+					headline = 'Incorrect.';
+					correctClass = 'incorrect';
+				}
+				select.classList.add(correctClass);
+				title = `<span class="${correctClass}">${headline}</span>`;
+				// make a span that contains feedback
+				feedbackSpan = document.createElement('span');
+				feedbackSpan.id = `${ww_id}-${name}-feedback`;
+				feedbackHeadline = document.createElement('span');
+				feedbackHeadline.id = `${ww_id}-${name}-headline`;
+				feedbackHeadline.textContent = headline;
+				feedbackSpan.appendChild(feedbackHeadline);
+				// make a non breaking span to surround select, sr span, and feedback button
+				let nbSpan = document.createElement('span');
+				nbSpan.classList.add("nobreak");
+				select.parentNode.insertBefore(nbSpan, select);
+				nbSpan.appendChild(select);
+				// put a span around select since select does not support ::after pseudo elements
+				let psSpan = document.createElement('span');
+				psSpan.classList.add("select-wrapper", correctClass);
+				select.parentNode.insertBefore(psSpan, select);
+				psSpan.appendChild(select);
+				// put a visibly hidden (screen-reader only) span with feedback
+				let srSpan = document.createElement('span');
+				srSpan.classList.add("visually-hidden");
+				srSpan.appendChild(feedbackSpan);
+				nbSpan.appendChild(srSpan);
+				// give the feedback to sr users immediately
+				select.setAttribute('aria-describedby',`${ww_id}-${name}-feedback`);
+				// make the feedback button
+				srSpan.after(createFeedbackButton(`${ww_id}-${name}`, title));
             }
         }
 
@@ -365,7 +433,7 @@ function handleWW(ww_id, action) {
             '<script src="' + ww_domain + '/webwork2_files/node_modules/mathjax/es5/tex-chtml.js" id="MathJax-script" defer></script>' +
             '<script src="https://pretextbook.org/js/lib/knowl.js" defer></script>' +
             '<link rel="stylesheet" href="' + ww_domain + '/webwork2_files/node_modules/bootstrap/dist/css/bootstrap.min.css"/>' +
-            '<script src="' + ww_domain + '/webwork2_files/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" id="MathJax-script" defer></script>';
+            '<script src="' + ww_domain + '/webwork2_files/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js" defer></script>';
 
         // Determine javascript and css dependencies
         const extra_css_files = [];
@@ -412,7 +480,7 @@ function handleWW(ww_id, action) {
                 max-width: unset;
                 margin: 0;
                 font-size: initial;
-                font-family: sans-serif;
+                /*font-family: sans-serif;*/
                 line-height: initial;
             }
             input[type="text"] {
@@ -439,6 +507,61 @@ function handleWW(ww_id, action) {
                 margin-inline: 5px 3px;
                 vertical-align: unset;
             }
+		span.nobreak {
+			white-space: nowrap;
+		}
+		input[type="text"].blank, input[type="text"].correct, input[type="text"].partly-correct, input[type="text"].incorrect, select.correct, select.incorrect {
+			background-size: auto 100%;
+			background-position: right;
+			background-repeat: no-repeat;
+		}
+		input[type="text"].blank {
+			background-color: #CDF;
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='19' y='16' fill='%230049DB' text-anchor='end'>🡄</text></svg>");
+		}
+		input[type="text"].correct, select.correct {
+			background-color: #8F8;
+		}
+		input[type="text"].correct {
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='20px' width='20px'><text x='19' y='16' fill='%23060' text-anchor='end'>✓</text></svg>");
+		}
+		input[type="text"].partly-correct {
+			background-color: #CDF;
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='22px' width='30px'><text x='28' y='18' fill='%235C5C00' text-anchor='end'>⚠</text></svg>");
+		}
+		input[type="text"].incorrect, select.incorrect {
+			background-color: #DAA;
+		}
+		input[type="text"].incorrect {
+			background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='22px' width='30px'><text x='28' y='18' fill='%23943D3D' text-anchor='end'>⚠</text></svg>");
+		}
+		input[type="text"].partly-correct, input[type="text"].incorrect {
+			background-size: auto 70%;
+		}
+		label.correct::before {
+			color: #060;
+			content: '✓';
+		}
+		label.incorrect::before {
+			color: #943D3D;
+			content: '⚠';
+		}
+		label.correct::before, label.incorrect::before {
+			display:inline-block;
+			width: 0;
+			direction: rtl;
+		}
+		.select-wrapper.correct::before {
+            color: #060;
+            content: '✓';
+			margin-right: 2pt;
+        }
+		.select-wrapper.incorrect::before {
+            color: #943D3D;
+            content: '⚠';
+			margin-right: 2pt;
+        }
+
             label {
                 display: inline-block;
             }
@@ -516,13 +639,14 @@ function handleWW(ww_id, action) {
                     bsPopover.show();
                     const content = iframe.contentDocument.getElementById(button.id.replace("-feedback-button", "-content"));
                     const popover = content.parentNode.parentNode;
+                    bsPopover.hide();
 
-                    button.addEventListener('shown.bs.popover', () => {
+                    /*button.addEventListener('shown.bs.popover', () => {
                         // Note that the button itself has the aria-describedby attribute set by bootstrap automatically.
                         button.previousElementSibling?.setAttribute('aria-describedby', popover.id);
-                    });
+                    });*/
 
-                    button.addEventListener('click', () => bsPopover.hide(), { once: true });
+                    button.addEventListener('click', () => bsPopover.show(), { once: true });
 
                     popover.querySelector('.popover-arrow').remove();
                     const title = popover.querySelector('.popover-header');
@@ -734,15 +858,15 @@ function createFeedbackButton(id, title, content) {
     feedbackButton.dataset.bsContent = `<div id="${id}-content">${content || ''}</div>`;
     if (!content) feedbackButton.dataset.emptyContent = '1';
 	const contentSpan = document.createElement('span');
-	contentSpan.style.fontSize = '15pt';
-	contentSpan.textContent = '\uD83D\uDEC8'
+	//contentSpan.style.fontSize = '15pt';
+	contentSpan.textContent = '🡇'
     feedbackButton.appendChild(contentSpan);
     feedbackButton.type = 'button';
     feedbackButton.classList.add('ww-feedback');
-    feedbackButton.style.fontSize = 'revert';
+    /*feedbackButton.style.fontSize = 'revert';
     feedbackButton.style.border = 'none';
     feedbackButton.style.verticalAlign = 'baseline';
-    feedbackButton.style.backgroundColor = 'transparent';
+    feedbackButton.style.backgroundColor = 'transparent';*/
 
     feedbackButton.id = `${id}-feedback-button`;
     feedbackButton.dataset.bsToggle = 'popover';
