@@ -91,7 +91,12 @@ window.addEventListener("load",function(event) {
         }
         console.log("\n                    XXXXXXXXX  p with no id", e);
         prev_p = $(e).prevAll("p");
-        console.log("prev_p", prev_p, "xx", prev_p[0].id);
+        console.log("prev_p", prev_p, "xx");
+        if(prev_p.length == 0) {
+            console.log("   PPP   problem: prev_p has no length:", prev_p);
+            continue
+        }
+        console.log("which has id", prev_p[0].id);
         var parts_found = 1;
         var parts_to_id = [e];
         for (var i=0; i < prev_p.length; ++i) {
@@ -114,6 +119,98 @@ window.addEventListener("load",function(event) {
             }
         }
     }
+
+    console.log("adding permalinks");
+    /* add permalinks to all sections and articles */
+    items_needing_permalinks = document.querySelectorAll('body section:not(.introduction), body section > p, body section > article, body section > figure, body section > .exercisegroup > .introduction > p, body section > .exercisegroup article');
+ //   items_needing_permalinks = document.querySelectorAll('body section article');
+    this_url = window.location.href.split('#')[0];
+    permalink_word = "permalink";
+    permalink_word = "&#x1F517;";
+    for (var i = 0; i < items_needing_permalinks.length; i++) {
+        this_item = items_needing_permalinks[i];
+        if(this_item.id) {
+            this_permalink_url = this_url + "#" + this_item.id;
+            console.log("        needs permalink", this_permalink_url, "  xx ", this_item);
+  //          this_permalink_container = document.createElement('div');
+  //          this_permalink_container.setAttribute('style', "position: relative; width: 0; height: 0");
+  //          this_permalink_container.innerHTML = '<span class="autopermalink">' + permalink_word + '</span>';
+           this_permalink_container = document.createElement('div');
+           this_permalink_container.setAttribute('class', 'autopermalink');
+           this_permalink_container.innerHTML = '<a href="' + this_permalink_url + '">' + permalink_word + '</a>';
+
+           this_item.insertAdjacentElement("afterbegin", this_permalink_container);
+        } else {
+            console.log("      no permalink, because no id", this_item)
+        }
+    }
+
+    console.log("adding video popouts");
+    all_iframes = document.querySelectorAll('body iframe');
+    // for now, we just want the iframes that hace youtube in the src
+    for (var i = 0; i < all_iframes.length; i++) {
+      this_item = all_iframes[i];
+      this_item_src = this_item.src;
+      console.log("this_item_src", this_item_src);
+      if(this_item_src.includes("youtube")) {
+        this_item_id = this_item.id;
+        this_item_width = this_item.width;
+        this_item_height = this_item.height;
+        if(this_item_height < 150) { continue }
+        console.log("found a youtube video on", this_item_id);
+        var empty_div = document.createElement('div');
+        var this_videomag_container = document.createElement('span');
+        parent_tag = this_item.parentElement.tagName;
+        if(parent_tag == "FIGURE") {
+           this_videomag_container.setAttribute("class", "videobig");
+        } else {
+           this_videomag_container.setAttribute("class", "videobig nofigure");
+        }
+/*
+        this_videomag_container.setAttribute('class', 'videobig');
+*/
+        this_videomag_container.setAttribute('video-id', this_item_id);
+        this_videomag_container.setAttribute('data-width', this_item_width);
+        this_videomag_container.setAttribute('data-height', this_item_height);
+        this_videomag_container.innerHTML = 'fit width';
+
+        this_item.insertAdjacentElement("beforebegin", empty_div);
+        this_item.insertAdjacentElement("beforebegin", this_videomag_container);
+      }
+    }
+
+    $(".videobig").click(function(){
+       parent_video_id = this.getAttribute("video-id");
+       console.log("clicked videobig for", parent_video_id);
+       this_video = document.getElementById(parent_video_id);
+       console.log("make big: ", this_video);
+       original_width =  this.getAttribute("data-width");
+       original_height =  this.getAttribute("data-height");
+
+       browser_width = $(window).width();
+       width_ratio = browser_width/original_width;
+       console.log("the browser is wider by a factor of",width_ratio);
+       this_video.setAttribute("width", width_ratio*original_width);
+       this_video.setAttribute("height", width_ratio*original_height);
+       this_video.setAttribute("style", "position:relative; left:-260px; z-index:1000");
+
+       this.setAttribute("class", "videosmall");
+       this.innerHTML = "make small";
+      $(".videosmall").click(function(){
+         console.log("clicked videosmall");
+         parent_video_id = this.getAttribute("video-id");
+         this_video = document.getElementById(parent_video_id);
+         original_width =  this.getAttribute("data-width");
+         original_height =  this.getAttribute("data-height");
+
+         this_video.removeAttribute("style");
+         this_video.setAttribute("width", original_width);
+         this_video.setAttribute("height", original_height);
+         $(this).hide();
+      });
+    });
+
+
 },
 false);
 

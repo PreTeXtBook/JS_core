@@ -53,6 +53,13 @@ function make_submit_button() {
     answer_button_holder.setAttribute('class', 'rq_submit_wrapper');
     answer_button_holder.innerHTML = rq_submit_button;
     last_reading_question.insertAdjacentElement("afterend", answer_button_holder);
+    console.log("                        XXXXXXXX  made answer button (may be hidden)");
+//    $('body').on('click','#rq_submit', function(){
+//      console.log("submitting rq answers");
+//      $('#rq_submit').addClass('submitted');
+//      document.getElementById('rq_submit').textContent = "Resubmit answers";
+//      save_reading_questions();
+//  });
 }
 
 function save_reading_questions() {
@@ -102,7 +109,7 @@ if (reading_questions.length) {
   document.head.appendChild(answer_css);
   var css_for_ans = '#rq_submit { background: #FDD; padding: 3px 5px; border-radius: 0.5em}\n';
   css_for_ans += '#rq_submit.submitted { background: #EFE; color: #BBB}';
-  css_for_ans += '.rq_submit_wrapper { margin-top: 0.5em; float: right}';
+  css_for_ans += '.rq_submit_wrapper { margin-top: 0.5em; float: right; position:relative; z-index:100;}';
   answer_css.innerHTML = css_for_ans;
 
   rq_answer_label = '<span'
@@ -497,6 +504,11 @@ if (reading_questions.length) {
  //   localStorage.removeItem(this_ques_id);
     localStorage.setObject(reading_questions_object_id, reading_questions_object);
   });
+
+  if(reading_questions_all_answered && uname != "guest" && role=="student") {
+        make_submit_button();
+        console.log("made submit button");
+  }
   
   $('body').on('click','#rq_submit', function(){
     console.log("submitting rq answers");
@@ -516,7 +528,8 @@ if (reading_questions.length) {
      alert(amhelpmessage)
   });
 
-  if(reading_questions_all_answered && uname != "guest" && role=="student") {
-        make_submit_button();
-  }
+//  if(reading_questions_all_answered && uname != "guest" && role=="student") {
+//        make_submit_button();
+//        console.log("remade submit button");
+//  }
 }

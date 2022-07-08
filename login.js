@@ -140,7 +140,7 @@ function check_role() {
 function validateLogin() {
     var logged_in = false;
     var un = document.loginform.uname.value;
-    un = un.toLowerCase();
+//    un = un.toLowerCase();
     uname = un;
     var pw = document.loginform.psw.value;
     emanu = pw;
@@ -168,9 +168,10 @@ function validateLogin() {
         logged_in = true;
     }
     else {
-        alert ("Login was unsuccessful, please check id and password");
         console.log("failed to set the ut_cookie");
+        console.log("xuname", uname, "yemanu", emanu, "the_un_enc", the_un_enc);
         logged_in = false;
+        alert ("Login was unsuccessful, please check id and password");
     }
     console.log("logged_in", logged_in);
     if (logged_in) {

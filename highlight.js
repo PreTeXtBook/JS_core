@@ -68,7 +68,7 @@ function index_of_child(child) {
 }
 
 function increment_id(list_of_things_with_ids) {  // assume ids are of the form xxxxNN with N a digit and x a non-digit
-    console.log("incrementing id on", list_of_things_with_ids);
+//    console.log("incrementing id on", list_of_things_with_ids);
     if (list_of_things_with_ids.length == 0) {
         return 0
     }
@@ -78,7 +78,7 @@ function increment_id(list_of_things_with_ids) {  // assume ids are of the form 
     for (var i=0; i < list_of_things_with_ids.length; ++i) {
         current_endings.push(list_of_things_with_ids[i]["id"].replace(/^.*?([0-9]+)$/, "$1"));
     }
-    console.log("existing id endings", current_endings);
+//    console.log("existing id endings", current_endings);
     current_max = Math.max(...current_endings);
     return id_start + (parseInt(current_max) + 1)
 }
@@ -86,7 +86,7 @@ function increment_id(list_of_things_with_ids) {  // assume ids are of the form 
 function enclosing_p_or_li(obj) {
     console.log("obj.tagName", obj.tagName, "ggg",obj);
     if (!obj) {
-        console.log("problem with previous object");
+ //       console.log("problem with previous object");
         return null
     }
     else if (obj.tagName == 'P' || obj.tagName == 'LI') {
@@ -101,15 +101,15 @@ function enclosing_p_or_li(obj) {
 async function display_one_highlight(parent_id, hl) {
             var the_parent = document.getElementById(parent_id);
             if (!the_parent) {
-                console.log("this id not on this page:", parent_id);
+    //            console.log("this id not on this page:", parent_id);
                 return
             }
-            console.log("setting", hl, "on", parent_id);
+ //           console.log("setting", hl, "on", parent_id);
             var st_node_ind = hl['start_nn'];
             var st_offset = hl['start_offset'];
             var end_node_ind = hl['end_nn'];
             var end_offset = hl['end_offset'];
-            console.log("st_node_ind", st_node_ind, "st_offset", st_offset, "end_node_ind", end_node_ind, "end_offset", end_offset);
+  //          console.log("st_node_ind", st_node_ind, "st_offset", st_offset, "end_node_ind", end_node_ind, "end_offset", end_offset);
             // other error checks: same parent
             if (st_offset < 0 || st_node_ind > the_parent.childNodes.length || end_node_ind > the_parent.childNodes.length || st_offset > the_parent.childNodes[st_node_ind].textContent.length || end_offset < 0 || end_offset > the_parent.childNodes[end_node_ind].textContent.length) {
                 console.log("highlight data inconsistent with paragraph structure that contains", the_parent.childNodes.length, "nodes");
@@ -123,17 +123,17 @@ async function display_one_highlight(parent_id, hl) {
             var inside_part = document.createElement("span")
             inside_part.classList.add("hl");
             inside_part.id = hl['id'];
-            console.log("inside_part", inside_part, "going inside this_range",this_range);
-            console.log("in the_parent",the_parent);
+ //           console.log("inside_part", inside_part, "going inside this_range",this_range);
+  //          console.log("in the_parent",the_parent);
             this_range.surroundContents(inside_part);
             return;
 }
 
 //var display_highlights_on = function(parent_id, highlights_on, ind) {
 async function display_highlights_on(parent_id, highlights_on, ind) {
-    console.log("display_highlights_on", parent_id, "xxxx", ind, "out of", highlights_on.length);
+ //   console.log("display_highlights_on", parent_id, "xxxx", ind, "out of", highlights_on.length);
     if (ind < highlights_on.length) {
-        console.log("about to display one highlight, number", ind, "on", parent_id);
+ //       console.log("about to display one highlight, number", ind, "on", parent_id);
         await display_one_highlight(parent_id, highlights_on[ind]);
         ++ind;
         await display_highlights_on(parent_id, highlights_on, ind)
@@ -142,7 +142,7 @@ async function display_highlights_on(parent_id, highlights_on, ind) {
 }
 
 async function display_all_highlights(every_highlight, hl_p_keys, i) {
-    console.log("making hl on", hl_p_keys[i]);
+//    console.log("making hl on", hl_p_keys[i]);
     if (i < hl_p_keys.length) {
         await display_highlights_on(hl_p_keys[i], every_highlight[hl_p_keys[i]], 0);
         ++i;
