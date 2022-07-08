@@ -102,7 +102,7 @@ if (reading_questions.length) {
   document.head.appendChild(answer_css);
   var css_for_ans = '#rq_submit { background: #FDD; padding: 3px 5px; border-radius: 0.5em}\n';
   css_for_ans += '#rq_submit.submitted { background: #EFE; color: #BBB}';
-  css_for_ans += '.rq_submit_wrapper { margin-top: 0.5em; float: right}';
+  css_for_ans += '.rq_submit_wrapper { margin-top: 0.5em; float: right; position:relative; z-index:100;}';
   answer_css.innerHTML = css_for_ans;
 
   rq_answer_label = '<span'

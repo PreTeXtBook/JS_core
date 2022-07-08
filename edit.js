@@ -2469,6 +2469,9 @@ function replace_by_id(theid, format) {
 
     var this_object_new = output_from_id("",theid, format);
 
+    console.log("replacing id", theid);
+    console.log("which is from", internalSource["root_data"]);
+
     document.getElementById(theid).setAttribute("id", "delete_me");
     document.getElementById("delete_me").insertAdjacentHTML('beforebegin', this_object_new);
     document.getElementById("delete_me").remove();
@@ -4577,7 +4580,7 @@ fetch(source_url).then(
               edit_choice = document.createElement('span');
               edit_choice.setAttribute("class", "login-link");
       //        edit_choice.innerHTML = "<span id='edit_choice'>Edit this page</span>";
-              document.getElementById("content").insertAdjacentElement("afterbegin", edit_choice);
+    //          document.getElementById("content").insertAdjacentElement("afterbegin", edit_choice);
               if(editing_mode) {
                   initialize_editing(this_source_txt)
              //     edit_choice.innerHTML = "<span id='edit_choice'>Stop editing this page</span>";
@@ -4585,7 +4588,7 @@ fetch(source_url).then(
               } else {
                   edit_choice.innerHTML = "<span id='edit_choice'>Edit this page</span>";
               }
-              document.getElementById("content").insertAdjacentElement("afterbegin", edit_choice);
+              document.getElementById("content").insertAdjacentElement("beforeend", edit_choice);
               console.log("editing choice enabled")
               $("#edit_choice").on("click", function(event){
                   console.log("apparently you want to edit");

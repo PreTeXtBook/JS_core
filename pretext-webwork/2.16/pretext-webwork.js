@@ -24,6 +24,8 @@ function handleWW(ww_id, action) {
     const ww_course_id = ww_container.dataset.courseid;
     const ww_user_id = ww_container.dataset.userid;
     const ww_course_password = ww_container.dataset.coursepassword;
+    const localize_correct = (ww_container.dataset.localizeCorrect ? ww_container.dataset.localizeCorrect : "Correct");
+    const localize_incorrect = (ww_container.dataset.localizeIncorrect ? ww_container.dataset.localizeIncorrect : "Incorrect");
 
     // Set the current seed
     if (!action) ww_container.dataset.current_seed = ww_container.dataset.seed;
@@ -249,14 +251,14 @@ function handleWW(ww_id, action) {
                     const score = data.rh_result.answers[name].score;
                     let title = '';
                     if (score == 1) {
-                        title = '<span class="correct">Correct!</span>';
+                        title = `<span class="correct">${localize_correct}!</span>`;
                     } else if (score > 0 && score < 1) {
-                        title = `<span class="partly-correct">${Math.round(score * 100)}% correct.</span>`;
+                        title = `<span class="partly-correct">${Math.round(score * 100)}% ${localize_correct}.</span>`;
                     } else if (data.rh_result.answers[name].student_ans == '') {
                         // do nothing if the submitted answer is blank and the problem has not already been scored as correct
                         continue;
                     } else if (score == 0) {
-                        title = '<span class="incorrect">Incorrect.</span>';
+                        title = `<span class="incorrect">${localize_incorrect}.</span>`;
                     }
 
                     input.after(createFeedbackButton(`${ww_id}-${name}`, title, data.rh_result.answers[name].ans_message));
@@ -266,7 +268,7 @@ function handleWW(ww_id, action) {
                     if (input.value == data.rh_result.answers[name].student_value) {
                         const feedbackButton = createFeedbackButton(`${ww_id}-${name}`,
                             data.rh_result.answers[name].student_value == data.rh_result.answers[name].correct_choice
-                            ? '<span class="correct">Correct!</span>' : '<span class="incorrect">Incorrect.</span>')
+                            ? `<span class="correct">${localize_correct}!</span>` : `<span class="incorrect">${localize_incorrect}.</span>`)
                         feedbackButton.style.marginRight = '0.25rem';
                         input.after(feedbackButton);
                     }
@@ -283,14 +285,14 @@ function handleWW(ww_id, action) {
                     const score = data.rh_result.answers[name].score;
                     let title = '';
                     if (score == 1) {
-                        title = '<span class="correct">Correct!</span>';
+                        title = `<span class="correct">${localize_correct}!</span>`;
                     } else if (score > 0 && score < 1) {
-                        title = `<span class="partly-correct">${Math.round(score * 100)}% correct.</span>`;
+                        title = `<span class="partly-correct">${Math.round(score * 100)}% ${localize_correct}.</span>`;
                     } else if (data.rh_result.answers[name].student_ans == '') {
                         // do nothing if the submitted answer is blank and the problem has not already been scored as correct
                         continue;
                     } else if (score == 0) {
-                        title = '<span class="incorrect">Incorrect.</span>';
+                        title = `<span class="incorrect">${localize_incorrect}.</span>`;
                     }
 
 					const feedbackButton = createFeedbackButton(`${ww_id}-${name}`, title, data.rh_result.answers[name].ans_message);
@@ -307,8 +309,8 @@ function handleWW(ww_id, action) {
             for (const select of selects) {
                 const name = select.name;
                 const feedbackButton = createFeedbackButton(`${ww_id}-${name}`,
-                    data.rh_result.answers[name].score == 1 ? '<span class="correct">Correct!</span>'
-                    : '<span class="incorrect">Incorrect.</span>')
+                    data.rh_result.answers[name].score == 1 ? `<span class="correct">${localize_correct}!</span>`
+                    : `<span class="incorrect">${localize_incorrect}.</span>`)
                 feedbackButton.style.marginRight = '0.25rem';
                 feedbackButton.style.marginLeft = '0.5rem';
                 select.after(feedbackButton);
@@ -503,7 +505,7 @@ function handleWW(ww_id, action) {
                         title.style.borderBottomWidth = 0;
                         content.parentNode.remove();
                     }
-                    if (title.textContent == 'Correct!') title.classList.add('correct');
+                    if (title.textContent == localize_correct + '!') title.classList.add('correct');
                 });
                 iframe.contentWindow.MathJax.startup.promise.then(() => iframe.contentWindow.MathJax.typesetPromise(['.popover', '.popover-content']));
             });

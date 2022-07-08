@@ -24,14 +24,21 @@ function handleWW(ww_id, action) {
 	const ww_course_id = ww_container.dataset.courseid;
 	const ww_user_id = ww_container.dataset.userid;
 	const ww_course_password = ww_container.dataset.coursepassword;
+	const localize_correct = ww_container.dataset.localizeCorrect;
+	const localize_incorrect = ww_container.dataset.localizeIncorrect;
+	const localize_blank = ww_container.dataset.localizeBlank;
+	const localize_submit = ww_container.dataset.localizeSubmit;
+	const localize_check_responses = ww_container.dataset.localizeCheckResponses;
+	const localize_reveal = ww_container.dataset.localizeReveal;
+	const localize_randomize = ww_container.dataset.localizeRandomize;
+	const localize_reset = ww_container.dataset.localizeReset;
+	const runestone_logged_in = (typeof eBookConfig !== 'undefined' && eBookConfig.username !== '');
 
 	// Set the current seed
 	if (!action) {
 		ww_container.dataset.current_seed = ww_container.dataset.seed;
-		if (typeof eBookConfig !== 'undefined') {
-			if (eBookConfig.username !== '') {
-				ww_container.dataset.current_seed = webworkSeedHash(eBookConfig.username + ww_container.dataset.current_seed);
-			}
+		if (runestone_logged_in) {
+			ww_container.dataset.current_seed = webworkSeedHash(eBookConfig.username + ww_container.dataset.current_seed);
 		}
 	}
 	else if (action == 'randomize') ww_container.dataset.current_seed = Number(ww_container.dataset.current_seed) + 100;
@@ -202,7 +209,7 @@ function handleWW(ww_id, action) {
 			const answerCount = body_div.querySelectorAll("input:not([type=hidden])").length +
 				body_div.querySelectorAll("select:not([type=hidden])").length;
 
-			check.textContent = answerCount > 1 ? 'Check Answers' : "Check Answer";
+			check.textContent = runestone_logged_in ? localize_submit : localize_check_responses;
 			check.addEventListener('click', () => handleWW(ww_id, "check"));
 
 			buttonContainer.appendChild(check);
@@ -213,7 +220,7 @@ function handleWW(ww_id, action) {
 				correct.classList.add("show-correct", 'webwork-button');
 				correct.type = "button";
 				correct.style.marginRight = "0.25rem";
-				correct.textContent = answerCount > 1 ? "Show Correct Answers" : "Show Correct Answer";
+				correct.textContent = localize_reveal;
 				correct.addEventListener('click', () => WWshowCorrect(ww_id, answers));
 				buttonContainer.appendChild(correct);
 			}
@@ -223,7 +230,7 @@ function handleWW(ww_id, action) {
 			randomize.type = "button";
 			randomize.classList.add('webwork-button');
 			randomize.style.marginRight = "0.25rem";
-			randomize.textContent = "Randomize";
+			randomize.textContent = localize_randomize;
 			randomize.addEventListener('click', () => handleWW(ww_id, 'randomize'));
 			buttonContainer.appendChild(randomize)
 
@@ -231,7 +238,7 @@ function handleWW(ww_id, action) {
 			const reset = document.createElement("button")
 			reset.type = "button"
 			reset.classList.add('webwork-button');
-			reset.textContent = "Reset";
+			reset.textContent = localize_reset;
 			reset.addEventListener('click', () => resetWW(ww_id));
 			buttonContainer.appendChild(reset)
 		} else {
@@ -257,16 +264,16 @@ function handleWW(ww_id, action) {
 					let headline = '';
 					let correctClass = '';
 					if (score == 1) {
-						headline = 'Correct!';
+						headline = localize_correct + '!';
 						correctClass = 'correct';
 					} else if (score > 0 && score < 1) {
-						headline = `${Math.round(score * 100)}% correct.`;
+						headline = `${Math.round(score * 100)}% ${localize_correct}.`;
 						correctClass = 'partly-correct';
 					} else if (data.rh_result.answers[name].student_ans == '') {
-						headline = 'Blank.';
+						headline = localize_blank + '.';
 						correctClass = 'blank';
 					} else if (score == 0) {
-						headline = 'Incorrect.';
+						headline = localize_incorrect + '.';
 						correctClass = 'incorrect';
 					}
 					let title = `<span class="${correctClass}">${headline}</span>`;
@@ -310,7 +317,7 @@ function handleWW(ww_id, action) {
 						}
 						const feedbackButton = createFeedbackButton(`${ww_id}-${name}`,
 							data.rh_result.answers[name].student_value == data.rh_result.answers[name].correct_choice
-							? '<span class="correct">Correct!</span>' : '<span class="incorrect">Incorrect.</span>')
+							? `<span class="correct">${localize_correct}</span>` : `<span class="incorrect">${localize_incorrect}.</span>`)
 						feedbackButton.style.marginRight = '0.25rem';
 						input.after(feedbackButton);
 					}
@@ -327,14 +334,14 @@ function handleWW(ww_id, action) {
 					const score = data.rh_result.answers[name].score;
 					let title = '';
 					if (score == 1) {
-						title = '<span class="correct">Correct!</span>';
+						title = `<span class="correct">${localize_correct}</span>`;
 					} else if (score > 0 && score < 1) {
-						title = `<span class="partly-correct">${Math.round(score * 100)}% correct.</span>`;
+						title = `<span class="partly-correct">${Math.round(score * 100)}% ${localize_correct}.</span>`;
 					} else if (data.rh_result.answers[name].student_ans == '') {
 						// do nothing if the submitted answer is blank and the problem has not already been scored as correct
 						continue;
 					} else if (score == 0) {
-						title = '<span class="incorrect">Incorrect.</span>';
+						title = `<span class="incorrect">${localize_incorrect}.</span>`;
 					}
 
 					const feedbackButton = createFeedbackButton(`${ww_id}-${name}`, title, data.rh_result.answers[name].ans_message);
@@ -353,10 +360,10 @@ function handleWW(ww_id, action) {
 				const score = data.rh_result.answers[name].score;
 				let title = '';
 				if (score == 1) {
-					headline = 'Correct!';
+					headline = localize_correct + '!';
 					correctClass = 'correct';
 				} else {
-					headline = 'Incorrect.';
+					headline = localize_incorrect + '.';
 					correctClass = 'incorrect';
 				}
 				select.classList.add(correctClass);
@@ -543,6 +550,7 @@ function handleWW(ww_id, action) {
 		label.incorrect::before {
 			color: #943D3D;
 			content: '⚠';
+			font-size: small;
 		}
 		label.correct::before, label.incorrect::before {
 			display:inline-block;
@@ -649,7 +657,7 @@ function handleWW(ww_id, action) {
 					popover.querySelector('.popover-arrow').remove();
 					const title = popover.querySelector('.popover-header');
 					if (button.dataset.emptyContent) content.parentNode.remove();
-					if (title.textContent == 'Correct!') title.classList.add('correct');
+					if (title.textContent == localize_correct + '!') title.classList.add('correct');
 				});
 				iframe.contentWindow.MathJax.startup.promise.then(() => iframe.contentWindow.MathJax.typesetPromise(['.popover', '.popover-content']));
 			});
