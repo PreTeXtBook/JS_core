@@ -566,6 +566,7 @@ function handleWW(ww_id, action) {
 			color: #943D3D;
 			content: '⚠';
 			margin-right: 2pt;
+			font-size: small;
 		}
 
 			label {

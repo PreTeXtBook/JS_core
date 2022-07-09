@@ -26,6 +26,9 @@ function handleWW(ww_id, action) {
     const ww_course_password = ww_container.dataset.coursepassword;
     const localize_correct = (ww_container.dataset.localizeCorrect ? ww_container.dataset.localizeCorrect : "Correct");
     const localize_incorrect = (ww_container.dataset.localizeIncorrect ? ww_container.dataset.localizeIncorrect : "Incorrect");
+    const localize_check_responses = (ww_container.dataset.localizeCheckResponses ? ww_container.dataset.localizeCheckResponses : "Check Responses");
+    const localize_randomize = (ww_container.dataset.localizeRandomize ? ww_container.dataset.localizeRandomize : "Randomize");
+    const localize_reset = (ww_container.dataset.localizeReset ? ww_container.dataset.localizeReset : "Reset");
 
     // Set the current seed
     if (!action) ww_container.dataset.current_seed = ww_container.dataset.seed;
@@ -197,7 +200,7 @@ function handleWW(ww_id, action) {
             const answerCount = body_div.querySelectorAll("input:not([type=hidden])").length +
                 body_div.querySelectorAll("select:not([type=hidden])").length;
 
-            check.textContent = answerCount > 1 ? 'Check Answers' : "Check Answer";
+            check.textContent = localize_check_responses;
             check.addEventListener('click', () => handleWW(ww_id, "check"));
 
             buttonContainer.appendChild(check);
@@ -218,7 +221,7 @@ function handleWW(ww_id, action) {
             randomize.type = "button";
             randomize.classList.add('webwork-button');
 			randomize.style.marginRight = "0.25rem";
-			randomize.textContent = "Randomize";
+			randomize.textContent = localize_randomize;
             randomize.addEventListener('click', () => handleWW(ww_id, 'randomize'));
             buttonContainer.appendChild(randomize)
 
@@ -226,7 +229,7 @@ function handleWW(ww_id, action) {
             const reset = document.createElement("button")
             reset.type = "button"
             reset.classList.add('webwork-button');
-            reset.textContent = "Reset";
+            reset.textContent = localize_reset;
             reset.addEventListener('click', () => resetWW(ww_id));
             buttonContainer.appendChild(reset)
         } else {
