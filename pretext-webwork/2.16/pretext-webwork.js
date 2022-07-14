@@ -462,6 +462,9 @@ function handleWW(ww_id, action) {
 				width: 300px;
 				height: 300px;
 			}
+            div.PGML img.image-view-elt {
+                 max-width:100%;
+            }
             </style>` +
             '</head><body><main class="pretext-content">' + form.outerHTML + '</main></body>' +
             '</html>';

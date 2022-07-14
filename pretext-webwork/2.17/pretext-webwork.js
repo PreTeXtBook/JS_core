@@ -568,6 +568,9 @@ function handleWW(ww_id, action) {
 			margin-right: 2pt;
 			font-size: small;
 		}
+		div.PGML img.image-view-elt {
+			max-width:100%;
+		}
 
 			label {
 				display: inline-block;
