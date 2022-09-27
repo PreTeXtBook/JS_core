@@ -505,6 +505,18 @@ window.addEventListener("load",function(event) {
        }
 });
 
+window.addEventListener("load",function(event) {
+       if(window.location.href.includes("runestone.academy")) {
+           console.log("            found runestone", window.location.href);
+/*        $('#primary-navbar').addClass('onrunestone');
+*/
+        var bustmenu = document.createElement("div");
+        bustmenu.className = "runestonebustmenu";
+        document.body.appendChild(bustmenu);
+        bustmenu.innerHTML = '<div class="dropdown">👤<div class="dropdown-content"> <a href="/runestone/assignments/chooseAssignment">Assignments</a><a href="/runestone/assignments/practice">Practice</a><hr> <a href="/runestone/default/courses">Change Course</a><hr> <hr> <a href="/runestone/dashboard/studentreport">Progress Page</a><hr> <a href="/runestone/default/user/profile">Edit Profile</a><a href="/runestone/default/user/change_password">Change Password</a><a href="/runestone/default/user/logout">Log Out</a><a href="/runestone/default/user/register">Register</a><a href="/runestone/default/user/login">Login</a><a href="/runestone/assignments/index">Progress Page</a> </div> </div>';
+       }
+});
+
 /*
 window.addEventListener("load",function(event) {
 //    setTimeout( function() {
