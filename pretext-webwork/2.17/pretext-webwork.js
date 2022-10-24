@@ -24,14 +24,14 @@ function handleWW(ww_id, action) {
 	const ww_course_id = ww_container.dataset.courseid;
 	const ww_user_id = ww_container.dataset.userid;
 	const ww_course_password = ww_container.dataset.coursepassword;
-	const localize_correct = ww_container.dataset.localizeCorrect;
-	const localize_incorrect = ww_container.dataset.localizeIncorrect;
-	const localize_blank = ww_container.dataset.localizeBlank;
-	const localize_submit = ww_container.dataset.localizeSubmit;
-	const localize_check_responses = ww_container.dataset.localizeCheckResponses;
-	const localize_reveal = ww_container.dataset.localizeReveal;
-	const localize_randomize = ww_container.dataset.localizeRandomize;
-	const localize_reset = ww_container.dataset.localizeReset;
+	const localize_correct = ww_container.dataset.localizeCorrect || "Correct";
+	const localize_incorrect = ww_container.dataset.localizeIncorrect || "Incorrect";
+	const localize_blank = ww_container.dataset.localizeBlank || "Blank";
+	const localize_submit = ww_container.dataset.localizeSubmit || "Submit";
+	const localize_check_responses = ww_container.dataset.localizeCheckResponses || "Check Responses";
+	const localize_reveal = ww_container.dataset.localizeReveal || "Reveal";
+	const localize_randomize = ww_container.dataset.localizeRandomize || "Randomize";
+	const localize_reset = ww_container.dataset.localizeReset || "Reset";
 	const runestone_logged_in = (typeof eBookConfig !== 'undefined' && eBookConfig.username !== '');
 
 	// Set the current seed
