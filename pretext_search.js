@@ -1,11 +1,32 @@
-function doSearch() {
+window.addEventListener("load",function(event) {
+        var secondsearchbox = document.createElement("div");
+        secondsearchbox.className = "searchbox";
+        secondsearchbox.id = "secondsearch";
+        document.body.appendChild(secondsearchbox);
+        secondsearchbox.innerHTML = '<div class="searchwidget"><input id="ptxsearchB" type="text" name="terms" placeholder="Search" onchange="doSearch(\'B\')"><button id="searchbutton" type="button" onclick="doSearch(\'B\')">🔍</button> <div>'
+    console.log("added second search box");
+});
+
+function doSearch(searchlocation="A") {
     // Get the search terms from the input text box
-    let terms = document.getElementById("ptxsearch").value;
+    var terms;
+    if(searchlocation == "A") {
+        terms = document.getElementById("ptxsearch").value;
+    } else {
+        terms = document.getElementById("ptxsearchB").value;
+    }
     // Where do we want to put the results?
     let resultArea = document.getElementById("searchresults")
     resultArea.innerHTML = "";  // clear out any previous results
     // assume AND for multiple words
-    let searchterms = terms;
+    var searchterms = terms;
+    if(searchlocation == "B") {
+        document.getElementById("ptxsearch").value = searchterms
+        console.log("ptxsearch value", document.getElementById("ptxsearch").value);
+    } else {
+        searchterms = terms;
+        document.getElementById("ptxsearchB").value = searchterms;
+    }
     searchterms = searchterms.trim();
     searchterms = searchterms.replace(/ +/g, " ");
     searchterms = searchterms.replaceAll(" ", " +");
@@ -60,7 +81,9 @@ function comparePosition(a, b) {
 }
 
 function addResultToPage(searchterms, result, docs, resultArea) {
-    let len = result.length
+    document.getElementById("searchterms").innerHTML = searchterms;
+    let len = result.length;
+    if (len == 0) {return }
     let high = result[Math.floor(len*0.25)].score;
     let med = result[Math.floor(len*0.5)].score;
     let low = result[Math.floor(len*0.75)].score;
@@ -102,8 +125,6 @@ function addResultToPage(searchterms, result, docs, resultArea) {
         bullet.appendChild(p);
         resultArea.appendChild(bullet);
     }
-    console.log("searchterms", searchterms);
-    document.getElementById("searchterms").innerHTML = searchterms;
     document.getElementById("searchresultsplaceholder").style.display = "block";
     MathJax.typesetPromise();
 }
