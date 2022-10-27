@@ -83,7 +83,15 @@ function comparePosition(a, b) {
 function addResultToPage(searchterms, result, docs, resultArea) {
     document.getElementById("searchterms").innerHTML = searchterms;
     let len = result.length;
-    if (len == 0) {return }
+    console.log("first result", result[0]);
+    if (len == 0) {
+        let noresults = document.createElement("div");
+        noresults.classList.add("noresults");
+        noresults.innerHTML = "No results were found.";
+        resultArea.appendChild(noresults);
+        document.getElementById("searchresultsplaceholder").style.display = "block";
+        return
+    }
     let high = result[Math.floor(len*0.25)].score;
     let med = result[Math.floor(len*0.5)].score;
     let low = result[Math.floor(len*0.75)].score;
