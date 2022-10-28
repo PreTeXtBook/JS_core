@@ -87,7 +87,7 @@ function addResultToPage(searchterms, result, docs, resultArea) {
     if (len == 0) {
         let noresults = document.createElement("div");
         noresults.classList.add("noresults");
-        noresults.innerHTML = "No results were found.";
+        noresults.innerHTML = "No results.";
         resultArea.appendChild(noresults);
         document.getElementById("searchresultsplaceholder").style.display = "block";
         return
