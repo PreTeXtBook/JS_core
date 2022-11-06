@@ -81,14 +81,24 @@ function comparePosition(a, b) {
 }
 
 function addResultToPage(searchterms, result, docs, resultArea) {
+    /* backward compatibility for old html */
+    if (document.getElementById("searchempty")) {
+        document.getElementById("searchempty").style.display = "none";
+    }
     document.getElementById("searchterms").innerHTML = searchterms;
     let len = result.length;
     console.log("first result", result[0]);
     if (len == 0) {
-        let noresults = document.createElement("div");
-        noresults.classList.add("noresults");
-        noresults.innerHTML = "No results.";
-        resultArea.appendChild(noresults);
+        if (document.getElementById("searchempty")) {
+            document.getElementById("searchempty").style.display = "block";
+        } else {
+            let noresults = document.createElement("div");
+            noresults.classList.add("noresults");
+            search_no_results_string = "No results were found"
+            noresults.innerHTML = search_no_results_string + ".";
+   //     console.log("the new variable", search_results_heading_string);
+            resultArea.appendChild(noresults);
+        }
         document.getElementById("searchresultsplaceholder").style.display = "block";
         return
     }
