@@ -249,11 +249,17 @@ console.log("this is e", e);
             console.log(e, "skipping the watermark");
             continue
         }
+/*
         console.log("\n                    XXXXXXXXX  p with no id", e);
+*/
         prev_p = $(e).prevAll("p");
+/*
         console.log("prev_p", prev_p, "xx");
+*/
         if(prev_p.length == 0) {
+/*
             console.log("   PPP   problem: prev_p has no length:", prev_p);
+*/
             continue
         }
         console.log("which has id", prev_p[0].id);
@@ -261,7 +267,9 @@ console.log("this is e", e);
         var parts_to_id = [e];
         for (var i=0; i < prev_p.length; ++i) {
             this_previous = prev_p[i];
+/*
             console.log("i", i, "this_previous", this_previous, "id", this_previous.id, "???", this_previous.hasAttribute('id'))
+*/
             if (!this_previous.hasAttribute('id')) {
                 parts_to_id.unshift(this_previous)
             }
@@ -304,7 +312,9 @@ console.log("this is e", e);
                 this_permalink_container.innerHTML = '<a href="' + this_permalink_url + '" title="Copy permalink for ' + this_permalink_description + '">' + permalink_word + '</a>';
                 this_item.insertAdjacentElement("afterbegin", this_permalink_container)
             } else {
+/*
                 console.log("      no permalink, because no id", this_item)
+*/
             }
         }
     }
@@ -662,24 +672,28 @@ window.addEventListener("load",function(event) {
             loadResource('js', 'login')
             loadResource('js', 'edit');
         } else {
-  var this_source_txt;
-  var source_url = window.location.href;
-  source_url = source_url.replace(/(#|\?).*/, "");
-  source_url = source_url.replace(/html$/, "ptx");
-  fetch(source_url).then(
-        function(u){ return u.text();}
-    ).then(
-        function(text){
-            this_source_txt = text;
-            if (this_source_txt.includes("404 Not")) {
-                console.log("Editing not enabled: source unavailable")
-            } else {
-              loadResource('css', 'features');
-              loadResource('js', 'login')
-              loadResource('js', 'edit');
-            }
-        }
-    );
+               var this_source_txt;
+               var source_url = window.location.href;
+               source_url = source_url.replace(/(#|\?).*/, "");
+               source_url = source_url.replace(/html$/, "ptx");
+               if (typeof sourceeditable !== 'undefined') {
+                 fetch(source_url).then(
+                     function(u){ return u.text();}
+                 ).then(
+                     function(text){
+                         this_source_txt = text;
+                         if (this_source_txt.includes("404 Not")) {
+                             console.log("Editing not enabled: source unavailable")
+                         } else {
+                           loadResource('css', 'features');
+                           loadResource('js', 'login')
+                           loadResource('js', 'edit');
+                         }
+                     }
+                 );
+                } else {
+                    console.log("Source file unavailable: editing not possible")
+                }
         }
 
 });
